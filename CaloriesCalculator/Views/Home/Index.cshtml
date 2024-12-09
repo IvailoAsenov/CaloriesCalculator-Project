@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Calculator";
+}
+
+<div class="search-section">
+    <div class="container">
+        <h1>Търсене на храна</h1>
+
+        <!-- Формата за търсене -->
+        <form method="post" asp-action="SearchFood">
+            <input type="text" id="searchInput" name="query" placeholder="Търсете храна..." autocomplete="off" />
+            <button type="submit">Търсене</button>
+        </form>
+
+        <!-- Проверка дали Suggestions не е null и има елементи -->
+        @if (Model?.Suggestions != null && Model.Suggestions.Any())
+        {
+                <div id="suggestions" class="dropdown">
+                    <ul>
+                    @foreach (var food in Model.Suggestions)
+                    {
+                                <li>
+                                    <form method="post" asp-action="AddFood">
+                                        <input type="hidden" name="foodName" value="@food.Name" />
+                                        <button type="submit">@food.Name</button>
+                                    </form>
+                                </li>
+                    }
+                    </ul>
+                </div>
+        }
+        else if (Model?.Suggestions != null && !Model.Suggestions.Any())
+        {
+                <p>Няма намерени храни по вашето търсене.</p>
+        }
+
+        <h2>Избрани храни:</h2>
+        <ul>
+            @foreach (var item in Model?.SelectedFoods ?? new List<Food>())
+            {
+                    <li>@item.Name - @item.TotalCalories kcal</li>
+            }
+        </ul>
+
+        <!-- Изчисляване на калориите -->
+        <form method="post" asp-action="CalculateCalories">
+            <button type="submit">Изчисли калориите</button>
+        </form>
+
+        <h3>Общо калории за деня: @Model?.TotalCalories ?? 0 kcal</h3>
+
+        <!-- Започване на ново изчисление -->
+        <form method="post" asp-action="StartNewCalculation">
+            <button type="submit">Друго изчисляване</button>
+        </form>
+    </div>
+</div>
