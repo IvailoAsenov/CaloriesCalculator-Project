@@ -15,11 +15,11 @@ namespace Project.Areas.Admin.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
-        {
-            var categories = _context.Categories.ToList();
-            return View(categories);
-        }
+        //public IActionResult Index()
+        //{
+        //    //var categories = _context.Categories.ToList();
+        //    return RedirectToAction("Index", "Home");
+        //}
 
         public IActionResult CreateCategory()
         {
@@ -45,15 +45,19 @@ namespace Project.Areas.Admin.Controllers
                     _context.Categories.Add(category);
                     await _context.SaveChangesAsync();
 
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Home", new { area = "" });
+
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", $"An error occurred while saving: {ex.Message}");
+                    return RedirectToAction("Index", "Home", new { area = "" });
+
                 }
             }
 
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home", new { area = "" });
+
         }
 
     }

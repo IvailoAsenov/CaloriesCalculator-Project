@@ -22,12 +22,12 @@ namespace CaloriesCalculator.Controllers
         {
             // Assuming your data model classes are in a namespace like CaloriesCalculator.Data and CaloriesCalculator.Models respectively
             var categories = await _context.Categories
-                                           .Select(c => new CaloriesCalculator.Models.Category
-                                           {
-                                               Id = c.Id,
-                                               Name = c.Name,
-                                               Calories = c.Calories // Adjust based on your properties and class mappings
-                                           })
+                            .Select(c => new CaloriesCalculator.Models.Category
+                            {
+                                Id = c.Id,
+                                Name = c.Name,
+                                Calories = c.Calories // Adjust based on your properties and class mappings
+                            })
                                            .ToListAsync();
             return View(categories);
         }

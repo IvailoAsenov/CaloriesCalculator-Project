@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaloriesCalculator.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241209191749_new")]
-    partial class @new
+    [Migration("20241215152516_RepoINIT")]
+    partial class RepoINIT
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,26 @@ namespace CaloriesCalculator.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("CaloriesCalculator.Data.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Calories")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
 
             modelBuilder.Entity("CaloriesCalculator.Data.ProgressEntry", b =>
                 {
@@ -298,30 +318,6 @@ namespace CaloriesCalculator.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Project.Models.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Calories")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-                });
-
             modelBuilder.Entity("SelectedFood", b =>
                 {
                     b.Property<int>("Id")
@@ -332,6 +328,9 @@ namespace CaloriesCalculator.Migrations
 
                     b.Property<double>("CaloriesPer100g")
                         .HasColumnType("float");
+
+                    b.Property<int>("FoodId")
+                        .HasColumnType("int");
 
                     b.Property<string>("FoodName")
                         .IsRequired()
@@ -380,7 +379,7 @@ namespace CaloriesCalculator.Migrations
 
             modelBuilder.Entity("Food", b =>
                 {
-                    b.HasOne("Project.Models.Category", "Category")
+                    b.HasOne("CaloriesCalculator.Data.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)

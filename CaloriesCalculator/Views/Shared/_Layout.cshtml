@@ -22,6 +22,9 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Calculator</a>
+                        </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                         <li class="nav-item">
@@ -34,13 +37,12 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Food">Food</a>
                         </li>
                         }
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Calculator</a>
-                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="CreateCategory">Create Category</a>
                         </li>
-
+                        }
                        
                     </ul>
                     <partial name="_LoginPartial" />
@@ -62,7 +64,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/progres.js" asp-append-version="true"></script>
+
     
     @await RenderSectionAsync("Scripts", required: false)
 </body>
