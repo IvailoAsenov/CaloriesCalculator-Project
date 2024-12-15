@@ -4,6 +4,7 @@ using CaloriesCalculator.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaloriesCalculator.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241209191749_new")]
+    partial class @new
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,6 +309,10 @@ namespace CaloriesCalculator.Migrations
                     b.Property<int>("Calories")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -325,9 +332,6 @@ namespace CaloriesCalculator.Migrations
 
                     b.Property<double>("CaloriesPer100g")
                         .HasColumnType("float");
-
-                    b.Property<int>("FoodId")
-                        .HasColumnType("int");
 
                     b.Property<string>("FoodName")
                         .IsRequired()
@@ -377,7 +381,7 @@ namespace CaloriesCalculator.Migrations
             modelBuilder.Entity("Food", b =>
                 {
                     b.HasOne("Project.Models.Category", "Category")
-                        .WithMany("Foods")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -451,11 +455,6 @@ namespace CaloriesCalculator.Migrations
                         .IsRequired();
 
                     b.Navigation("Food");
-                });
-
-            modelBuilder.Entity("Project.Models.Category", b =>
-                {
-                    b.Navigation("Foods");
                 });
 #pragma warning restore 612, 618
         }

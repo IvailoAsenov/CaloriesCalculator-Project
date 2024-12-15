@@ -8,5 +8,6 @@ namespace CaloriesCalculator.ViewModels
         public List<Food> Suggestions { get; set; }
         public List<SelectedFood> SelectedFoods { get; set; }
         public double TotalCalories { get; set; }
+
     }
 }

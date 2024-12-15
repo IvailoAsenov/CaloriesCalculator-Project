@@ -1,4 +1,4 @@
-﻿namespace CaloriesCalculator.Models
+﻿namespace CaloriesCalculator.Data
 {
     public class Category
     {

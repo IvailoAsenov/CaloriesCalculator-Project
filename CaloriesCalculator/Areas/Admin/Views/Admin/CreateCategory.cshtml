@@ -1,4 +1,4 @@
-﻿@model Project.Models.Category
+﻿@model CaloriesCalculator.Models.Category
 
 @{
     ViewData["Title"] = "Create Category";
@@ -6,18 +6,27 @@
 
 <h2>Създаване на категория</h2>
 
-<form asp-action="CreateCategory" method="post">
+<form asp-action="CreateCategory" method="post" class="form">
     <div class="form-group">
         <label for="Name">Име на категорията</label>
         <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
     </div>
-    <div class="form-group">
-        <label for="Description">Описание на категорията</label>
-        <input type="text" class="form-control" id="Description" name="Description" value="@Model.Description" required />
-    </div>
+
     <div class="form-group">
         <label for="Calories">Калории на категорията</label>
         <input type="number" class="form-control" id="Calories" name="Calories" value="@Model.Calories" required />
     </div>
-    <button type="submit" class="btn btn-primary">Създай категория</button>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Създай категория</button>
+    </div>
 </form>
+
+<!-- Validation summary for server-side validation errors -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger mt-3">
+        <strong>Грешка!</strong>
+        @Html.ValidationSummary()
+    </div>
+}

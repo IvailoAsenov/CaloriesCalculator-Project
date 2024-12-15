@@ -1,57 +1,60 @@
-﻿@{
+﻿@model List<CaloriesCalculator.Models.Category>
+
+@{
     ViewData["Title"] = "Calculator";
+    var categoriesJson = System.Text.Json.JsonSerializer.Serialize(Model);
 }
 
 <div class="search-section">
     <div class="container">
         <h1>Търсене на храна</h1>
 
-        <!-- Формата за търсене -->
-        <form method="post" asp-action="SearchFood">
-            <input type="text" id="searchInput" name="query" placeholder="Търсете храна..." autocomplete="off" />
-            <button type="submit">Търсене</button>
+        <form>
+            <input type="text" id="searchInput" name="query" placeholder="Търсете храна..." autocomplete="off" list="categorySuggestions" />
+            <input type="number" id="gramsInput" name="grams" placeholder="Грамажи" min="0" /> гр.
         </form>
 
-        <!-- Проверка дали Suggestions не е null и има елементи -->
-        @if (Model?.Suggestions != null && Model.Suggestions.Any())
-        {
-                <div id="suggestions" class="dropdown">
-                    <ul>
-                    @foreach (var food in Model.Suggestions)
-                    {
-                                <li>
-                                    <form method="post" asp-action="AddFood">
-                                        <input type="hidden" name="foodName" value="@food.Name" />
-                                        <button type="submit">@food.Name</button>
-                                    </form>
-                                </li>
-                    }
-                    </ul>
-                </div>
-        }
-        else if (Model?.Suggestions != null && !Model.Suggestions.Any())
-        {
-                <p>Няма намерени храни по вашето търсене.</p>
-        }
-
-        <h2>Избрани храни:</h2>
-        <ul>
-            @foreach (var item in Model?.SelectedFoods ?? new List<Food>())
+        <!-- Добавяне на <datalist> за предложения -->
+        <datalist id="categorySuggestions">
+            @foreach (var category in Model)
             {
-                    <li>@item.Name - @item.TotalCalories kcal</li>
+                <option value="@category.Name">@category.Name</option>
             }
-        </ul>
+        </datalist>
 
-        <!-- Изчисляване на калориите -->
-        <form method="post" asp-action="CalculateCalories">
-            <button type="submit">Изчисли калориите</button>
-        </form>
+        <h2>Общо калории за деня: <span id="totalCalories">0</span> kcal</h2>
 
-        <h3>Общо калории за деня: @Model?.TotalCalories ?? 0 kcal</h3>
+        <!-- Button for calculating calories -->
+        <button type="button" id="calculateCaloriesButton">Изчисли калориите</button>
 
-        <!-- Започване на ново изчисление -->
-        <form method="post" asp-action="StartNewCalculation">
-            <button type="submit">Друго изчисляване</button>
+        <form method="post" asp-action="StartNewCalculation" asp-controller="Home">
+            <button type="submit" id="startNewCalculationButton">Друго изчисляване</button>
         </form>
     </div>
 </div>
+
+<script>
+    // Parse the categories JSON data from Razor
+    var categories = @Html.Raw(@categoriesJson);
+
+    document.getElementById('calculateCaloriesButton').addEventListener('click', function () {
+        var grams = document.getElementById('gramsInput').value;
+        var totalCaloriesElement = document.getElementById('totalCalories');
+        var query = document.getElementById('searchInput').value;
+
+        if (grams && query) {
+            // Find the selected category
+            var selectedCategory = categories.find(c => c.Name === query);
+
+            if (selectedCategory) {
+                var caloriesPer100g = selectedCategory.Calories;
+                var totalCalories = (caloriesPer100g * grams) / 100;
+                totalCaloriesElement.innerText = totalCalories.toFixed(2); // Round to 2 decimal places
+            } else {
+                alert('Храната не е намерена в списъка.');
+            }
+        } else {
+            alert('Моля, въведете количество грамове и изберете храна.');
+        }
+    });
+</script>

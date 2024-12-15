@@ -4,6 +4,7 @@ using CaloriesCalculator.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CaloriesCalculator.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241211165739_DeмоDb3")]
+    partial class DeмоDb3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,12 +86,17 @@ namespace CaloriesCalculator.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CategoryId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.HasKey("Name");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("CategoryId1");
 
                     b.ToTable("Foods");
                 });
@@ -306,6 +314,10 @@ namespace CaloriesCalculator.Migrations
                     b.Property<int>("Calories")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -326,10 +338,7 @@ namespace CaloriesCalculator.Migrations
                     b.Property<double>("CaloriesPer100g")
                         .HasColumnType("float");
 
-                    b.Property<int>("FoodId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FoodName")
+                    b.Property<string>("FoodId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -345,7 +354,7 @@ namespace CaloriesCalculator.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FoodName");
+                    b.HasIndex("FoodId");
 
                     b.HasIndex("Name");
 
@@ -377,10 +386,14 @@ namespace CaloriesCalculator.Migrations
             modelBuilder.Entity("Food", b =>
                 {
                     b.HasOne("Project.Models.Category", "Category")
-                        .WithMany("Foods")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Project.Models.Category", null)
+                        .WithMany("Foods")
+                        .HasForeignKey("CategoryId1");
 
                     b.Navigation("Category");
                 });
@@ -440,7 +453,7 @@ namespace CaloriesCalculator.Migrations
                 {
                     b.HasOne("Food", "Food")
                         .WithMany()
-                        .HasForeignKey("FoodName")
+                        .HasForeignKey("FoodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

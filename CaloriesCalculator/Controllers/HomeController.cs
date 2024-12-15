@@ -18,10 +18,67 @@ namespace CaloriesCalculator.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            // Assuming your data model classes are in a namespace like CaloriesCalculator.Data and CaloriesCalculator.Models respectively
+            var categories = await _context.Categories
+                                           .Select(c => new CaloriesCalculator.Models.Category
+                                           {
+                                               Id = c.Id,
+                                               Name = c.Name,
+                                               Calories = c.Calories // Adjust based on your properties and class mappings
+                                           })
+                                           .ToListAsync();
+            return View(categories);
         }
+
+
+        [HttpGet]
+        public JsonResult GetFoodSuggestions(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return Json(new List<Food>()); // Връща празен списък, ако няма въведен текст
+            }
+
+            // Взимане на съвпадения от базата данни
+            var suggestions = _context.Categories
+                .Where(f => f.Name.Contains(query))
+                .Select(f => new { f.Name, f.Calories }) // Взимаш само необходимите данни
+                .ToList();
+
+            return Json(suggestions);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CalculateCalories(IFormCollection form)
+        {
+            var userId = GetUserId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var selectedFoodItems = _context.Categories.ToList(); // Fetch the categories again if necessary
+            int totalCalories = 0;
+
+            var gramsInput = form["grams"];
+            if (int.TryParse(gramsInput, out int grams) && grams > 0)
+            {
+                foreach (var category in selectedFoodItems)
+                {
+                    // Calculate calories based on grams and calories per 100 grams
+                    int caloriesPer100g = category.Calories;
+                    totalCalories += (caloriesPer100g * grams) / 100;
+                }
+            }
+
+            ViewData["TotalCalories"] = totalCalories;
+            return RedirectToAction("Progres");
+        }
+
+
 
         public IActionResult Sport()
         {
@@ -54,7 +111,7 @@ namespace CaloriesCalculator.Controllers
 
             if (weeklyGoal == 0)
             {
-                weeklyGoal = 14000;
+                weeklyGoal = 0;
             }
 
             var totalCalories = progressEntries.Sum(p => p.Calories);
@@ -93,7 +150,7 @@ namespace CaloriesCalculator.Controllers
                 {
                     UserId = userId,
                     WeeklyTargetCalories = weeklyGoal,
-                    TargetCalories = 2000 // Default value for daily target
+                    TargetCalories = 2000 
                 };
 
                 _context.UserSettings.Add(userSettings);
@@ -153,86 +210,3 @@ namespace CaloriesCalculator.Controllers
         }
     }
 }
-
-
-
-//using CaloriesCalculator.Data;
-//using CaloriesCalculator.Models;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-
-//namespace CaloriesCalculator.Controllers
-//{
-//    public class FoodController : Controller
-//    {
-//        private readonly ApplicationDbContext _context;
-
-//        // Списък с храните, който ще използваме
-//        private readonly List<Food> foodList = new List<Food>
-//        {
-//            new Food { Name = "Ябълка", CaloriesPer100g = 52 },
-//            new Food { Name = "Банан", CaloriesPer100g = 89 },
-//            new Food { Name = "Пица", CaloriesPer100g = 266 },
-//            new Food { Name = "Пържени картофи", CaloriesPer100g = 312 },
-//            new Food { Name = "Авокадо", CaloriesPer100g = 160 },
-//            new Food { Name = "Ананас", CaloriesPer100g = 50 },
-//            new Food { Name = "Артишок", CaloriesPer100g = 47 }
-//        };
-
-//        public FoodController(ApplicationDbContext context)
-//        {
-//            _context = context;
-//        }
-
-//        // Метод за показване на списък с храни по запитване
-//        public IActionResult ShowSuggestions(string query)
-//        {
-//            var filteredFoods = foodList.Where(f => f.Name.ToLower().Contains(query.ToLower())).ToList();
-//            return Json(filteredFoods);
-//        }
-
-//        // Метод за добавяне на храна
-//        [HttpPost]
-//        public async Task<IActionResult> AddFood(string foodName, double quantity)
-//        {
-//            var food = foodList.FirstOrDefault(f => f.Name == foodName);
-//            if (food == null)
-//            {
-//                return NotFound();
-//            }
-
-//            var foodItem = new SelectedFood
-//            {
-//                Name = food.Name,
-//                CaloriesPer100g = food.CaloriesPer100g,
-//                Quantity = quantity,
-//                TotalCalories = (food.CaloriesPer100g * quantity) / 100
-//            };
-
-//            _context.SelectedFoods.Add(foodItem);
-//            await _context.SaveChangesAsync();
-
-//            return Ok(foodItem);
-//        }
-
-//        // Метод за изчисляване на общите калории
-//        public IActionResult CalculateCalories()
-//        {
-//            var totalCalories = _context.SelectedFoods.Sum(f => f.TotalCalories);
-//            return Json(new { totalCalories = totalCalories });
-//        }
-
-//        // Метод за започване на ново изчисление (изчистване на текущия списък с храни)
-//        public async Task<IActionResult> StartNewCalculation()
-//        {
-//            _context.SelectedFoods.RemoveRange(_context.SelectedFoods);
-//            await _context.SaveChangesAsync();
-//            return Ok(new { message = "New calculation started" });
-//        }
-//    }
-
-
-//}
