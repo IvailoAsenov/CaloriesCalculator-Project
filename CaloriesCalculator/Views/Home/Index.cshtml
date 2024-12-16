@@ -14,7 +14,6 @@
             <input type="number" id="gramsInput" name="grams" placeholder="Грамажи" min="0" /> гр.
         </form>
 
-        <!-- Добавяне на <datalist> за предложения -->
         <datalist id="categorySuggestions">
             @foreach (var category in Model)
             {
@@ -22,10 +21,13 @@
             }
         </datalist>
 
+        <h2>Избрани продукти:</h2>
+        <ul id="productList"></ul>
+
         <h2>Общо калории за деня: <span id="totalCalories">0</span> kcal</h2>
 
-        <!-- Button for calculating calories -->
         <button type="button" id="calculateCaloriesButton">Изчисли калориите</button>
+        <button type="button" id="clearCalculationsButton">Изчисти сметките</button>
 
         <form method="post" asp-action="StartNewCalculation" asp-controller="Home">
             <button type="submit" id="startNewCalculationButton">Друго изчисляване</button>
@@ -34,8 +36,9 @@
 </div>
 
 <script>
-    // Parse the categories JSON data from Razor
     var categories = @Html.Raw(@categoriesJson);
+
+    var selectedItems = [];
 
     document.getElementById('calculateCaloriesButton').addEventListener('click', function () {
         var grams = document.getElementById('gramsInput').value;
@@ -43,18 +46,51 @@
         var query = document.getElementById('searchInput').value;
 
         if (grams && query) {
-            // Find the selected category
             var selectedCategory = categories.find(c => c.Name === query);
 
             if (selectedCategory) {
                 var caloriesPer100g = selectedCategory.Calories;
                 var totalCalories = (caloriesPer100g * grams) / 100;
-                totalCaloriesElement.innerText = totalCalories.toFixed(2); // Round to 2 decimal places
+
+                selectedItems.push({
+                    name: query,
+                    grams: grams,
+                    calories: totalCalories
+                });
+
+                var sumCalories = selectedItems.reduce((acc, item) => acc + item.calories, 0);
+                totalCaloriesElement.innerText = sumCalories.toFixed(2);
+
+                
+                updateSelectedItemsDisplay();
+
+                
+                document.getElementById('searchInput').value = '';
+                document.getElementById('gramsInput').value = '';
+
             } else {
                 alert('Храната не е намерена в списъка.');
             }
-        } else {
+        }
+        else {
             alert('Моля, въведете количество грамове и изберете храна.');
         }
     });
+
+    document.getElementById('clearCalculationsButton').addEventListener('click', function () {
+        selectedItems = [];
+        document.getElementById('productList').innerHTML = '';
+        document.getElementById('totalCalories').innerText = '0'; 
+    });
+
+    function updateSelectedItemsDisplay() {
+        var productListElement = document.getElementById('productList');
+        productListElement.innerHTML = ''; 
+
+        selectedItems.forEach(function (item) {
+            var listItem = document.createElement('li');
+            listItem.textContent = `${item.name}: ${item.grams} гр - ${item.calories.toFixed(2)} kcal`;
+            productListElement.appendChild(listItem);
+        });
+    }
 </script>

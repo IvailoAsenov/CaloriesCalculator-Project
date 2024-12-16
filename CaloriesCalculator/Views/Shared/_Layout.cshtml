@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="~/css/progres.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/sport.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/food.css" asp-append-version="true" />
+ 
+  
 </head>
 <body>
     <header>
@@ -39,9 +41,9 @@
                         }
                         @if (User.IsInRole("Admin"))
                         {
-                        <li class="nav-item">
+                          <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="CreateCategory">Create Category</a>
-                        </li>
+                         </li>
                         }
                        
                     </ul>
