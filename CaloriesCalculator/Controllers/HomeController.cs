@@ -107,6 +107,17 @@ public class HomeController : Controller
 
         var totalCalories = progressEntries.Sum(p => p.Calories);
 
+        
+        if (totalCalories > weeklyGoal)
+        {
+            var overage = totalCalories - weeklyGoal;
+            ViewBag.ErrorMessage = $"Надвишили сте седмичната цел с {overage} калории!";
+        }
+        else
+        {
+            ViewBag.ErrorMessage = null; 
+        }
+
         ViewBag.WeeklyGoal = weeklyGoal;
         ViewBag.TotalCalories = totalCalories;
 

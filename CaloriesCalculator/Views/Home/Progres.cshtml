@@ -43,12 +43,20 @@
 <div class="card">
     <div class="card-body">
         <h2>Прогрес за Седмицата:</h2>
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
         <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: @(ViewBag.TotalCalories / (double)ViewBag.WeeklyGoal * 100)%"
-                 aria-valuenow="@(ViewBag.TotalCalories)" aria-valuemin="0" aria-valuemax="@ViewBag.WeeklyGoal">
-                @(ViewBag.TotalCalories / (double)ViewBag.WeeklyGoal * 100)%
+            <div class="progress-bar" role="progressbar" style="width: @(Math.Min(Math.Round(ViewBag.TotalCalories / (double)ViewBag.WeeklyGoal * 100), 100))%"
+                 aria-valuenow="@(Math.Min(ViewBag.TotalCalories, ViewBag.WeeklyGoal))" aria-valuemin="0" aria-valuemax="@ViewBag.WeeklyGoal">
+                @(Math.Min(Math.Round(ViewBag.TotalCalories / (double)ViewBag.WeeklyGoal * 100), 100))%
             </div>
         </div>
+
         <p>Общо калории: <strong>@ViewBag.TotalCalories</strong></p>
     </div>
 </div>

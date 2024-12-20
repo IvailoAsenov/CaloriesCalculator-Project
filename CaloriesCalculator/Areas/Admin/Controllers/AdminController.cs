@@ -15,15 +15,11 @@ namespace Project.Areas.Admin.Controllers
             _context = context;
         }
 
-        //public IActionResult Index()
-        //{
-        //    //var categories = _context.Categories.ToList();
-        //    return RedirectToAction("Index", "Home");
-        //}
+        
 
         public IActionResult CreateCategory()
         {
-            // Use the view model
+           
             var categoryViewModel = new CaloriesCalculator.Models.Category();
             return View(categoryViewModel);
         }
@@ -35,7 +31,7 @@ namespace Project.Areas.Admin.Controllers
             {
                 try
                 {
-                    // Map the view model to the data model
+                    
                     var category = new CaloriesCalculator.Data.Category
                     {
                         Name = categoryViewModel.Name,

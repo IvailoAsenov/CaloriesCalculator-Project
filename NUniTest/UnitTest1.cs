@@ -29,17 +29,17 @@ namespace NUniTest
         [Test]
         public async Task Index_ReturnsViewResult_WithCategoriesList()
         {
-            // Arrange
+          
             var categoriesList = new List<Category>
             {
                 new Category { Id = 1, Name = "Fruits", Calories = 50 },
                 new Category { Id = 2, Name = "Vegetables", Calories = 30 }
             };
 
-            // Act
+          
             var result = await _controller.Index();
 
-            // Assert
+            
             var viewResult = result as ViewResult;
             var model = viewResult?.Model as List<Category>;
             Assert.IsNotNull(viewResult);
@@ -49,7 +49,7 @@ namespace NUniTest
         [Test]
         public void GetFoodSuggestions_ReturnsJsonResult_WithFilteredSuggestions()
         {
-            // Arrange
+            
             var categoriesList = new List<Category>
             {
                 new Category { Id = 1, Name = "Apple", Calories = 52 },
@@ -65,7 +65,7 @@ namespace NUniTest
         [Test]
         public async Task CalculateCalories_ReturnsRedirectToProgres_WithTotalCalories()
         {
-            // Arrange
+            
             var form = new Mock<IFormCollection>();
             form.Setup(f => f["grams"]).Returns("100");
             var categoriesList = new List<Category>
@@ -75,10 +75,9 @@ namespace NUniTest
             };
 
 
-            // Act
+            
             var result = await _controller.CalculateCalories(form.Object);
 
-            // Assert
             var redirectResult = result as RedirectToActionResult;
             Assert.IsNotNull(redirectResult);
             Assert.AreEqual("Progres", redirectResult.ActionName);
@@ -87,7 +86,7 @@ namespace NUniTest
         [Test]
         public async Task UpdateGoal_UpdatesWeeklyGoal_WhenValid()
         {
-            // Arrange
+            
             var weeklyGoal = 2000;
             var userId = "user1";
             var userSettings = new UserSettings { UserId = userId, WeeklyTargetCalories = 1500 };
@@ -98,10 +97,10 @@ namespace NUniTest
                 new Claim(ClaimTypes.NameIdentifier, userId)
             }));
 
-            // Act
+           
             var result = await _controller.UpdateGoal(weeklyGoal);
 
-            // Assert
+            
             var redirectResult = result as RedirectToActionResult;
             Assert.IsNotNull(redirectResult);
             Assert.AreEqual("Progres", redirectResult.ActionName);
@@ -110,7 +109,7 @@ namespace NUniTest
         [Test]
         public async Task AddCalories_AddsCaloriesToProgressEntry_WhenValid()
         {
-            // Arrange
+            
             var date = DateTime.Now;
             var calories = 250;
             var userId = "user1";
@@ -120,10 +119,10 @@ namespace NUniTest
                 new Claim(ClaimTypes.NameIdentifier, userId)
             }));
 
-            // Act
+            
             var result = await _controller.AddCalories(date, calories);
 
-            // Assert
+            
             var redirectResult = result as RedirectToActionResult;
             Assert.IsNotNull(redirectResult);
             Assert.AreEqual("Progres", redirectResult.ActionName);
